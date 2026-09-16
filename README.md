@@ -69,22 +69,3 @@ Open http://localhost:3000. Node 20.9+ is required (Next.js 16's minimum).
   resource), so it stays even though recipe search itself is
   Spoonacular-only. A miss falls back to a plain letter avatar rather than
   a broken image or a misleadingly specific one.
-
-## What I'd extend first
-
-1. **Expiry-aware sorting.** An optional "use by" date per fridge item,
-   surfaced by default - probably the single highest-leverage feature for
-   reducing decision fatigue, since it turns "what should I cook" into
-   "here's what's about to go bad."
-2. **A "cook this" action.** Selecting a recipe could auto-decrement the
-   fridge ingredients it used, closing the loop instead of leaving the
-   user to update inventory by hand.
-3. **Barcode scanning or a quick-add list** for faster fridge entry, since
-   manual typing is itself a source of friction.
-4. **Real accounts + a database** (e.g. Postgres via Prisma, or Supabase)
-   once the app needs to sync across devices instead of living in one
-   browser's `localStorage`.
-5. **Real URL-based routes** for the three pages (currently client-side
-   tab state, not `/frij` / `/spize-rak` / `/grosry-lizst` in the address
-   bar) if deep-linking or browser back/forward between pages becomes
-   useful.
