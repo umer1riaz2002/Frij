@@ -2,23 +2,40 @@
 
 import { useState } from 'react';
 import { EffortTag, Recipe } from '@/lib/types';
+import { getSpoonacularKey } from '@/lib/apiKey';
+import EnergySlider from './EnergySlider';
 import FilterChips from './FilterChips';
 import RecipeCard from './RecipeCard';
 
-export default function RecipePanel({ searchTerms }: { searchTerms: string[] }) {
+interface Props {
+  searchTerms: string[];
+  onOpenSettings?: () => void;
+}
+
+// Error codes that are fixed by changing the API key in Settings.
+const KEY_ERROR_CODES = ['no_key', 'bad_key', 'quota'];
+
+export default function RecipePanel({ searchTerms, onOpenSettings }: Props) {
   const [recipes, setRecipes] = useState<Recipe[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeFilters, setActiveFilters] = useState<EffortTag[]>([]);
+  const [errorCode, setErrorCode] = useState('');
+  const [activeFilters, setActiveFilters] = useState<EffortTag[]>(['quick']); // matches the 'Okay' default level below
+  const [energyLevel, setEnergyLevel] = useState(2);
 
   async function findRecipes() {
     setLoading(true);
     setError('');
+    setErrorCode('');
     try {
-      const res = await fetch(`/api/recipes?ingredients=${encodeURIComponent(searchTerms.join(','))}`);
+      const key = getSpoonacularKey();
+      const res = await fetch(`/api/recipes?ingredients=${encodeURIComponent(searchTerms.join(','))}`, {
+        headers: key ? { 'x-spoonacular-key': key } : {},
+      });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? 'Something went wrong finding recipes.');
+        setErrorCode(data.code ?? '');
         setRecipes(null);
       } else {
         setRecipes(data.recipes);
@@ -49,7 +66,24 @@ export default function RecipePanel({ searchTerms }: { searchTerms: string[] }) 
         </button>
       </div>
 
-      {error && <p className="mb-3 text-sm text-coral">{error}</p>}
+      <EnergySlider
+        value={energyLevel}
+        onChange={(level, filters) => {
+          setEnergyLevel(level);
+          setActiveFilters(filters);
+        }}
+      />
+
+      {error && (
+        <div className="mb-3">
+          <p className="text-sm text-coral">{error}</p>
+          {onOpenSettings && KEY_ERROR_CODES.includes(errorCode) && (
+            <button onClick={onOpenSettings} className="mt-1 text-xs font-medium text-mint hover:underline">
+              Open Settings
+            </button>
+          )}
+        </div>
+      )}
 
       {recipes && recipes.length > 0 && <FilterChips active={activeFilters} onToggle={toggleFilter} />}
 
@@ -58,7 +92,7 @@ export default function RecipePanel({ searchTerms }: { searchTerms: string[] }) 
       )}
 
       {recipes && recipes.length > 0 && visible.length === 0 && (
-        <p className="text-sm text-muted">Nothing matches those filters - try loosening one.</p>
+        <p className="text-sm text-muted">Nothing matches those filters - try loosening one, or bump your energy level up.</p>
       )}
 
       <div className="space-y-3">

@@ -1,5 +1,10 @@
 import FridgeApp from '@/components/FridgeApp';
+import IntroGate from '@/components/IntroGate';
 
 export default function Home() {
-  return <FridgeApp />;
+  return (
+    <IntroGate>
+      <FridgeApp />
+    </IntroGate>
+  );
 }

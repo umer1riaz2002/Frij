@@ -14,6 +14,7 @@ import FridgeGrid from './FridgeGrid';
 import SpiceRack from './SpiceRack';
 import GroceryList from './GroceryList';
 import RecipePanel from './RecipePanel';
+import ApiKeySettings from './ApiKeySettings';
 import Sidebar, { Page } from './Sidebar';
 
 function makeId() {
@@ -58,6 +59,15 @@ export default function FridgeApp() {
     });
   }
 
+  // Used by the receipt/shelf scanner to add several items from one photo
+  // in a row. Reuses addItem's own stacking/dedupe logic per item, since
+  // each call operates on the latest state via the functional setState form.
+  function addManyItems(
+    newItems: { name: string; qty: number; unit: string; category: Category; searchTerm: string }[]
+  ) {
+    newItems.forEach((i) => addItem(i.name, i.qty, i.unit, i.category, i.searchTerm));
+  }
+
   function adjustQty(id: string, delta: number) {
     setItems((prev) =>
       prev.map((i) => (i.id === id ? { ...i, qty: i.qty + delta } : i)).filter((i) => i.qty > 0)
@@ -95,20 +105,26 @@ export default function FridgeApp() {
   const searchTerms = [...items.map((i) => i.searchTerm), ...spices.map((s) => s.searchTerm)];
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <header className="mb-8">
-        <h1 className="font-display text-3xl font-bold tracking-tight text-ice">Frij</h1>
-        <p className="mt-1 text-sm text-muted">Open it up, see what you&apos;ve got, stop deciding.</p>
-      </header>
+    <div className="min-h-screen md:pl-48">
+      <Sidebar active={page} onSelect={setPage} />
 
-      <div className="flex flex-col gap-6 md:flex-row">
-        <Sidebar active={page} onSelect={setPage} />
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-10">
+        <header className="mb-5 md:mb-8">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-ice">Frij</h1>
+          <p className="mt-1 text-sm text-muted">Open it up, see what you&apos;ve got, stop deciding.</p>
+        </header>
 
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0">
           {page === 'frij' && (
-            <div className="grid gap-10 md:grid-cols-2">
-              <FridgeGrid items={items} onAdd={addItem} onAdjust={adjustQty} onRemove={removeItem} />
-              <RecipePanel searchTerms={searchTerms} />
+            <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+              <FridgeGrid
+                items={items}
+                onAdd={addItem}
+                onAddMany={addManyItems}
+                onAdjust={adjustQty}
+                onRemove={removeItem}
+              />
+              <RecipePanel searchTerms={searchTerms} onOpenSettings={() => setPage('settings')} />
             </div>
           )}
 
@@ -122,8 +138,10 @@ export default function FridgeApp() {
               onRemove={removeGrocery}
             />
           )}
+
+          {page === 'settings' && <ApiKeySettings />}
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
