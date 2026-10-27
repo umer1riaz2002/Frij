@@ -24,7 +24,7 @@ export default function FilterChips({ active, onToggle }: Props) {
             key={f.value}
             onClick={() => onToggle(f.value)}
             className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-              isActive ? 'bg-mint text-frost' : 'bg-panel text-muted hover:text-ice'
+              isActive ? 'bg-yellow text-frost' : 'bg-purple text-yolk  hover:text-ice'
             }`}
           >
             {f.label}

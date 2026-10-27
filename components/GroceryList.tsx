@@ -36,12 +36,12 @@ export default function GroceryList({ groceries, fridgeItems, onAdd, onRemove }:
   return (
     <section>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-display text-sm font-medium uppercase tracking-wide text-muted">
+        <h2 className="font-display text-sm font-medium uppercase tracking-wide text-yolk ">
           Grosry Lizst - {groceries.length} {groceries.length === 1 ? 'item' : 'items'}
         </h2>
         <button
           onClick={() => setAdding((a) => !a)}
-          className="rounded-lg bg-mint px-3 py-1.5 text-xs font-medium text-frost"
+          className="rounded-lg bg-yellow px-3 py-1.5 text-xs font-medium text-frost"
         >
           {adding ? 'Close' : '+ Add to list'}
         </button>
@@ -58,7 +58,7 @@ export default function GroceryList({ groceries, fridgeItems, onAdd, onRemove }:
       )}
 
       {groceries.length === 0 && !adding && (
-        <p className="mt-4 text-sm text-muted">Nothing on the list yet.</p>
+        <p className="mt-4 text-sm text-yolk ">Nothing on the list yet.</p>
       )}
 
       <div className="mt-4 space-y-2">
@@ -67,7 +67,7 @@ export default function GroceryList({ groceries, fridgeItems, onAdd, onRemove }:
           const showNotice = Boolean(match) && !dismissed.has(g.id);
 
           return (
-            <div key={g.id} className="rounded-2xl bg-panelRaised p-3">
+            <div key={g.id} className="rounded-2xl bg-mauve  p-3">
               <div className="flex items-center gap-3">
                 <ImageWithFallback
                   src={mealDbIngredientImageUrl(g.searchTerm)}
@@ -77,28 +77,28 @@ export default function GroceryList({ groceries, fridgeItems, onAdd, onRemove }:
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ice">{g.name}</p>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-yolk ">
                     {g.qty} {g.unit}
                   </p>
                 </div>
                 <button
                   onClick={() => onRemove(g.id)}
                   aria-label={`Remove ${g.name} from list`}
-                  className="shrink-0 text-xs text-muted hover:text-coral"
+                  className="shrink-0 text-xs text-yolk  hover:text-coral"
                 >
                   remove
                 </button>
               </div>
 
               {showNotice && match && (
-                <div className="mt-2 flex items-start justify-between gap-2 rounded-lg bg-panel px-3 py-2 text-xs text-yolk">
+                <div className="mt-2 flex items-start justify-between gap-2 rounded-lg bg-purple px-3 py-2 text-xs text-yolk">
                   <span>
-                    Already have {match.qty} {match.unit} {match.name} in fridge
+                    {match.qty} {match.unit} {match.name} already exists in your fridge!
                   </span>
                   <button
                     onClick={() => dismiss(g.id)}
                     aria-label="Dismiss notice"
-                    className="shrink-0 text-muted hover:text-ice"
+                    className="shrink-0 text-yolk  hover:text-ice"
                   >
                     x
                   </button>

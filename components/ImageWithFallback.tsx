@@ -16,7 +16,7 @@ export default function ImageWithFallback({ src, alt, fallbackLabel, className }
   if (errored) {
     return (
       <div
-        className={`flex items-center justify-center border border-dashed border-muted bg-panel font-mono text-xs text-muted ${className ?? ''}`}
+        className={`flex items-center justify-center border border-dashed border-yolk  bg-purple font-mono text-xs text-yolk  ${className ?? ''}`}
         aria-hidden
         title="No photo available"
       >

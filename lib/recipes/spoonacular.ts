@@ -1,5 +1,6 @@
 import { Recipe } from '../types';
 import { classifyFromSpoonacular } from './effort';
+import { TermGroups, countTierMatches } from './priority';
 
 const BASE = 'https://api.spoonacular.com';
 
@@ -10,6 +11,17 @@ interface SpoonacularStep {
 
 interface SpoonacularMissedIngredient {
   name: string;
+}
+
+interface SpoonacularNamed {
+  name?: string;
+  nameClean?: string;
+}
+
+export interface SearchResult {
+  recipes: Recipe[];
+  // Per recipe, how many of the person's items in each priority tier it uses (see priority.ts).
+  tierMatches: Map<string | number, number[]>;
 }
 
 // Carries Spoonacular's HTTP status so the API route can tell the user what
@@ -25,8 +37,13 @@ export class SpoonacularError extends Error {
   }
 }
 
-export async function searchSpoonacular(ingredientNames: string[], apiKey: string): Promise<Recipe[]> {
-  if (ingredientNames.length === 0) return [];
+export async function searchSpoonacular(
+  ingredientNames: string[],
+  apiKey: string,
+  groups: TermGroups
+): Promise<SearchResult> {
+  const tierMatches = new Map<string | number, number[]>();
+  if (ingredientNames.length === 0) return { recipes: [], tierMatches };
 
   const key = encodeURIComponent(apiKey);
 
@@ -38,7 +55,7 @@ export async function searchSpoonacular(ingredientNames: string[], apiKey: strin
   if (!findRes.ok) throw new SpoonacularError('findByIngredients', findRes.status);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const findData: any[] = await findRes.json();
-  if (findData.length === 0) return [];
+  if (findData.length === 0) return { recipes: [], tierMatches };
 
   const ids = findData.map((r) => r.id).join(',');
   const infoUrl = `${BASE}/recipes/informationBulk?ids=${ids}&apiKey=${key}`;
@@ -50,7 +67,7 @@ export async function searchSpoonacular(ingredientNames: string[], apiKey: strin
 
   const infoById = new Map(infoData.map((r) => [r.id, r]));
 
-  return findData.map((base) => {
+  const recipes = findData.map((base) => {
     const info = infoById.get(base.id) ?? {};
     const steps: string[] = info.analyzedInstructions?.[0]?.steps?.map((s: SpoonacularStep) => s.step) ?? [];
     const equipment: string[] =
@@ -59,6 +76,14 @@ export async function searchSpoonacular(ingredientNames: string[], apiKey: strin
       ) ?? [];
     const missingIngredients: string[] =
       (base.missedIngredients as SpoonacularMissedIngredient[] | undefined)?.map((m) => m.name) ?? [];
+
+    const usedNames: string[] = ((base.usedIngredients ?? []) as SpoonacularNamed[]).flatMap((u) =>
+      [u.name, u.nameClean].filter((n): n is string => Boolean(n))
+    );
+    const recipeIngredients: string[] = ((info.extendedIngredients ?? []) as SpoonacularNamed[]).flatMap((e) =>
+      [e.nameClean, e.name].filter((n): n is string => Boolean(n))
+    );
+    tierMatches.set(base.id, countTierMatches(groups, usedNames, recipeIngredients));
 
     return {
       id: base.id,
@@ -74,4 +99,6 @@ export async function searchSpoonacular(ingredientNames: string[], apiKey: strin
       steps: steps.length > 0 ? steps : ['Full steps are on the source site - open the recipe link.'],
     } as Recipe;
   });
+
+  return { recipes, tierMatches };
 }

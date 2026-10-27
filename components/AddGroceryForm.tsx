@@ -43,9 +43,9 @@ export default function AddGroceryForm({ onSubmit, onCancel }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 flex flex-wrap items-end gap-3 rounded-2xl bg-panel p-4">
+    <form onSubmit={handleSubmit} className="mt-4 flex flex-wrap items-end gap-3 rounded-2xl bg-purple p-4">
       <div className="flex flex-col">
-        <label className="mb-1 text-xs text-muted" htmlFor="grocery-name">
+        <label className="mb-1 text-xs text-yolk " htmlFor="grocery-name">
           To buy
         </label>
         <input
@@ -54,13 +54,13 @@ export default function AddGroceryForm({ onSubmit, onCancel }: Props) {
           value={name}
           onChange={(e) => handleNameChange(e.target.value)}
           placeholder="e.g. chicken thighs"
-          className="w-44 rounded-lg bg-panelRaised px-3 py-2 text-sm text-ice outline-none focus:ring-2 focus:ring-mint"
+          className="w-44 rounded-lg bg-mauve  px-3 py-2 text-sm text-ice outline-none focus:ring-2 focus:ring-yellow"
         />
         {error && <span className="mt-1 text-xs text-coral">{error}</span>}
       </div>
 
       <div className="flex flex-col">
-        <label className="mb-1 text-xs text-muted" htmlFor="grocery-qty">
+        <label className="mb-1 text-xs text-yolk " htmlFor="grocery-qty">
           Qty
         </label>
         <input
@@ -69,19 +69,19 @@ export default function AddGroceryForm({ onSubmit, onCancel }: Props) {
           min={1}
           value={qty}
           onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-          className="w-16 rounded-lg bg-panelRaised px-3 py-2 text-sm text-ice outline-none focus:ring-2 focus:ring-mint"
+          className="w-16 rounded-lg bg-mauve  px-3 py-2 text-sm text-ice outline-none focus:ring-2 focus:ring-yellow"
         />
       </div>
 
       <div className="flex flex-col">
-        <label className="mb-1 text-xs text-muted" htmlFor="grocery-unit">
+        <label className="mb-1 text-xs text-yolk " htmlFor="grocery-unit">
           Unit
         </label>
         <select
           id="grocery-unit"
           value={unit}
           onChange={(e) => handleUnitChange(e.target.value)}
-          className="rounded-lg bg-panelRaised px-3 py-2 text-sm text-ice outline-none focus:ring-2 focus:ring-mint"
+          className="rounded-lg bg-mauve  px-3 py-2 text-sm text-ice outline-none focus:ring-2 focus:ring-yellow"
         >
           {UNIT_GROUPS.map((group) => (
             <optgroup key={group.label} label={group.label}>
@@ -95,10 +95,10 @@ export default function AddGroceryForm({ onSubmit, onCancel }: Props) {
         </select>
       </div>
 
-      <button type="submit" className="rounded-lg bg-mint px-4 py-2 text-sm font-medium text-frost">
+      <button type="submit" className="rounded-lg bg-yellow px-4 py-2 text-sm font-medium text-frost">
         Add to list
       </button>
-      <button type="button" onClick={onCancel} className="text-sm text-muted hover:text-ice">
+      <button type="button" onClick={onCancel} className="text-sm text-yolk  hover:text-ice">
         Cancel
       </button>
     </form>

@@ -1,5 +1,6 @@
 'use client';
 
+import { TermGroups } from '@/lib/recipes/priority';
 import { useEffect, useState } from 'react';
 import { Category, FridgeItem, SpiceItem, GroceryItem } from '@/lib/types';
 import {
@@ -102,16 +103,24 @@ export default function FridgeApp() {
 
   // Spize Rak contents count as "on hand" for recipe matching, same as
   // anything in the fridge - merged here before being sent to search.
-  const searchTerms = [...items.map((i) => i.searchTerm), ...spices.map((s) => s.searchTerm)];
+const termGroups: TermGroups = {
+  protein: items.filter((i) => i.category === 'protein').map((i) => i.searchTerm),
+  pantry: items.filter((i) => i.category === 'pantry').map((i) => i.searchTerm),
+  dairy: items.filter((i) => i.category === 'dairy').map((i) => i.searchTerm),
+  produce: items.filter((i) => i.category === 'produce').map((i) => i.searchTerm),
+  other: items.filter((i) => i.category === 'other').map((i) => i.searchTerm),
+  spices: spices.map((s) => s.searchTerm),
+};
+const searchTerms = Object.values(termGroups).flat();
 
   return (
-    <div className="min-h-screen md:pl-48">
+    <div className="min-h-screen md:pl-24">
       <Sidebar active={page} onSelect={setPage} />
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-10">
         <header className="mb-5 md:mb-8">
-          <h1 className="font-display text-3xl font-bold tracking-tight text-ice">Frij</h1>
-          <p className="mt-1 text-sm text-muted">Open it up, see what you&apos;ve got, stop deciding.</p>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-ice">Welcome to Frij!</h1>
+          <p className="mt-1 text-sm text-yolk">Note down your groceries (or just snap a pic of your reciept) and find recipes based on your energy level.</p>
         </header>
 
         <div className="min-w-0">
@@ -124,7 +133,7 @@ export default function FridgeApp() {
                 onAdjust={adjustQty}
                 onRemove={removeItem}
               />
-              <RecipePanel searchTerms={searchTerms} onOpenSettings={() => setPage('settings')} />
+              <RecipePanel searchTerms={searchTerms} termGroups={termGroups} onOpenSettings={() => setPage('settings')} />
             </div>
           )}
 

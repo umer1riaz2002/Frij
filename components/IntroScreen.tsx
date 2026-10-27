@@ -1,17 +1,35 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useState } from 'react';
 import { isPlausibleKey, markIntroSeen, setSpoonacularKey } from '@/lib/apiKey';
+import MagneticButton from './MagneticButton';
+
 
 interface Props {
   onDone: () => void;
 }
 
+// Button with the blob shape.
+const BLOB_BUTTON =
+  'group relative flex w-60 items-center justify-center px-10 text-center text-sm font-medium text-yellow disabled:cursor-not-allowed disabled:opacity-40';
+
+function blobMask(file: string): CSSProperties {
+  const url = `url('/${file}')`;
+  return {
+    maskImage: url,
+    WebkitMaskImage: url,
+    maskSize: '100% 100%',
+    WebkitMaskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+    WebkitMaskRepeat: 'no-repeat',
+  };
+}
+
 export default function IntroScreen({ onDone }: Props) {
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
-  // null = still checking. The demo button stays enabled unless the server
-  // explicitly says it has no demo key, so a failed check never blocks anyone.
+  const [showKeyField, setShowKeyField] = useState(false);
+  // null = still checking. The demo button stays enabled unless the server explicitly says it has no demo key to avoid failed checks.
   const [demoAvailable, setDemoAvailable] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -33,11 +51,11 @@ export default function IntroScreen({ onDone }: Props) {
     e.preventDefault();
     const trimmed = draft.trim();
     if (!isPlausibleKey(trimmed)) {
-      setError('That doesn’t look like an API key. Paste just the key itself, with no spaces or quotes.');
+      setError('Invalid Key');
       return;
     }
     if (!setSpoonacularKey(trimmed)) {
-      setError('This browser blocked saving it (private window or blocked site data).');
+      setError('Browser failed to save key');
       return;
     }
     markIntroSeen();
@@ -50,68 +68,100 @@ export default function IntroScreen({ onDone }: Props) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-10">
+    <main
+      className="flex min-h-screen items-center justify-center px-6 py-10"
+      style={{
+        backgroundImage: 'url(/blob-haikei.svg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       <div className="w-full max-w-3xl">
-        <div className="mb-8 text-center">
-          <h1 className="font-display text-4xl font-bold tracking-tight text-ice">Frij</h1>
-          <p className="mt-2 text-sm text-muted">Open it up, see what you&apos;ve got, stop deciding.</p>
+        <div className="mb-4 text-center">
+          <h1 className="font-display text-4xl font-bold tracking-tight text-purple ">Frij</h1>
+          <p className="mt-2 text-sm text-mauve">Welcome!</p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-[3fr_2fr]">
-          <form onSubmit={handleSubmit} className="rounded-2xl bg-panel p-5">
-            <label htmlFor="intro-key" className="font-display text-sm font-medium text-ice">
-              Enter your Spoonacular key
+        <div className="flex flex-col items-center md:flex-row md:justify-center">
+          <MagneticButton
+            onClick={() => setShowKeyField((open) => !open)}
+            expanded={showKeyField}
+            controls="intro-key-form"
+            className={`${BLOB_BUTTON} aspect-[9/8]`}
+          >
+            <span
+              aria-hidden
+              className="absolute inset-0 bg-mauve transition-colors group-hover:bg-purple "
+              style={blobMask('blob-btn-a.svg')}
+            />
+            <span
+              className="absolute flex items-center justify-center text-center text-balance"
+              style={{ left: '30.8%', top: '23.5%', width: '52.5%', height: '32.9%' }}
+            >
+            Enter your Spoonacular key
+            </span>
+          </MagneticButton>
+
+          <MagneticButton
+            onClick={chooseDemo}
+            disabled={demoAvailable === false}
+            className={`${BLOB_BUTTON} aspect-square`}
+          >
+            <span
+              aria-hidden
+              className="absolute inset-0 bg-mauve transition-colors group-hover:bg-purple "
+              style={blobMask('blob-btn-b.svg')}
+            />
+            <span
+              className="absolute flex items-center justify-center text-center text-balance"
+              style={{ left: '7.5%', top: '36.6%', width: '69.2%', height: '37.4%' }}
+            >
+            Or just use our demo key :)
+            </span>
+          </MagneticButton>
+        </div>
+
+        <p className="text-center text-xs text-mauve">
+          {demoAvailable === false
+            ? 'No demo key is set up on this server yet, so you’ll need your own for now.'
+            : 'Demo key is rate-limited.'}
+        </p>
+
+        {showKeyField && (
+          <form id="intro-key-form" onSubmit={handleSubmit} className="mx-auto mt-6 max-w-md rounded-2xl bg-peach p-5">
+            <label htmlFor="intro-key" className="font-display text-sm font-medium text-purple ">
+              Spoonacular key
             </label>
             <input
               id="intro-key"
               type="password"
               autoComplete="off"
               spellCheck={false}
+              autoFocus
               value={draft}
               onChange={(e) => {
                 setDraft(e.target.value);
                 setError('');
               }}
               placeholder="paste your key"
-              className="mt-2 w-full rounded-lg bg-panelRaised px-3 py-2 font-mono text-sm text-ice outline-none placeholder:text-muted focus:ring-2 focus:ring-mint"
+              className="mt-2 w-full rounded-lg bg-purple  px-3 py-2 font-mono text-sm text-yellow outline-none placeholder:text-mauve focus:ring-2 focus:ring-yellow"
             />
             {error && <p className="mt-2 text-xs text-coral">{error}</p>}
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <button type="submit" className="rounded-lg bg-mint px-4 py-2 text-sm font-medium text-frost">
+              <button type="submit" className="rounded-lg bg-mauve px-4 py-2 text-sm font-medium text-yellow hover:bg-mauve/80">
                 Continue
               </button>
               <a
                 href="https://spoonacular.com/food-api"
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs text-muted hover:text-ice"
+                className="text-xs text-mauve hover:text-yellow"
               >
-                Don&apos;t have one? Get a free key
+                or use a free demo key
               </a>
             </div>
           </form>
-
-          <div className="flex flex-col justify-center rounded-2xl bg-panel p-5">
-            <button
-              type="button"
-              onClick={chooseDemo}
-              disabled={demoAvailable === false}
-              className="rounded-lg bg-panelRaised px-4 py-3 text-sm font-medium text-ice transition hover:bg-frost disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Or just use our demo key :)
-            </button>
-            <p className="mt-3 text-xs text-muted">
-              {demoAvailable === false
-                ? 'No demo key is set up on this server yet, so you’ll need your own for now.'
-                : 'Everyone using the demo shares one daily limit, so it can run out. You can add your own key any time in Settings.'}
-            </p>
-          </div>
-        </div>
-
-        <p className="mt-6 text-center text-xs text-muted">
-          A key you enter stays in this browser only. It&apos;s passed to Spoonacular when you search for recipes and
-          never stored on our side.
-        </p>
+        )}
       </div>
     </main>
   );

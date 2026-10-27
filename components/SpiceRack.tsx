@@ -24,19 +24,19 @@ export default function SpiceRack({ spices, onAdd, onRemove }: Props) {
   return (
     <section>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-display text-sm font-medium uppercase tracking-wide text-muted">
+        <h2 className="font-display text-sm font-medium uppercase tracking-wide text-yolk ">
           Spize Rak - {spices.length} {spices.length === 1 ? 'spice' : 'spices'}
         </h2>
         <button
           onClick={() => setAdding((a) => !a)}
-          className="rounded-lg bg-mint px-3 py-1.5 text-xs font-medium text-frost"
+          className="rounded-lg bg-yellow px-3 py-1.5 text-xs font-medium text-frost"
         >
           {adding ? 'Close' : '+ Add spice'}
         </button>
       </div>
 
-      <p className="mb-3 text-xs text-muted">
-        Anything in here counts as on-hand for recipes - no quantities, just what&apos;s within reach of the stove.
+      <p className="mb-3 text-xs text-yolk ">
+       Add in your spices and seasonings here. They&apos;ll be used to find recipes that match what you have in your fridge.
       </p>
 
       {adding && (
@@ -50,8 +50,8 @@ export default function SpiceRack({ spices, onAdd, onRemove }: Props) {
       )}
 
       {spices.length === 0 && !adding && (
-        <p className="mt-2 text-sm text-muted">
-          Empty rack. Add salt, pepper, or anything specific like Guajillo pepper.
+        <p className="mt-2 text-sm text-yolk ">
+          Empty rack.
         </p>
       )}
 
@@ -60,17 +60,17 @@ export default function SpiceRack({ spices, onAdd, onRemove }: Props) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search your spice rack..."
-          className="mt-2 w-full rounded-lg bg-panel px-3 py-2 text-sm text-ice outline-none placeholder:text-muted focus:ring-2 focus:ring-mint"
+          className="mt-2 w-full rounded-lg bg-purple px-3 py-2 text-sm text-ice outline-none placeholder:text-yolk  focus:ring-2 focus:ring-yellow"
         />
       )}
 
       <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
         {filtered.map((spice) => (
-          <div key={spice.id} className="relative rounded-2xl bg-panelRaised p-3">
+          <div key={spice.id} className="relative rounded-2xl bg-mauve  p-3">
             <button
               onClick={() => onRemove(spice.id)}
               aria-label={`Remove ${spice.name}`}
-              className="absolute -right-2 -top-2 h-5 w-5 rounded-full bg-panel text-xs text-muted hover:text-coral"
+              className="absolute -right-2 -top-2 h-5 w-5 rounded-full bg-purple text-xs text-yolk  hover:text-coral"
             >
               x
             </button>

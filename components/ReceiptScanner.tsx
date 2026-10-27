@@ -113,14 +113,14 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
   const includedCount = drafts?.filter((d) => d.include).length ?? 0;
 
   return (
-    <div className="mt-4 rounded-2xl bg-panel p-4">
+    <div className="mt-4 rounded-2xl bg-purple p-4">
       {!drafts && (
         <>
           <div className="mb-3 flex gap-2">
             <button
               onClick={() => setMode('receipt')}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
-                mode === 'receipt' ? 'bg-mint text-frost' : 'bg-panelRaised text-muted'
+                mode === 'receipt' ? 'bg-yellow text-frost' : 'bg-mauve  text-yolk '
               }`}
             >
               Receipt
@@ -128,7 +128,7 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
             <button
               onClick={() => setMode('shelf')}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
-                mode === 'shelf' ? 'bg-mint text-frost' : 'bg-panelRaised text-muted'
+                mode === 'shelf' ? 'bg-yellow text-frost' : 'bg-mauve  text-yolk '
               }`}
             >
               Shelf / fridge photo
@@ -140,7 +140,7 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
             accept="image/*"
             capture="environment"
             onChange={handleFileSelect}
-            className="block text-xs text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-panelRaised file:px-3 file:py-2 file:text-xs file:text-ice"
+            className="block text-xs text-yolk  file:mr-3 file:rounded-lg file:border-0 file:bg-mauve  file:px-3 file:py-2 file:text-xs file:text-ice"
           />
 
           {imageDataUrl && (
@@ -154,11 +154,11 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
             <button
               onClick={extract}
               disabled={!imageDataUrl || loading}
-              className="rounded-lg bg-mint px-4 py-2 text-sm font-medium text-frost disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg bg-yellow px-4 py-2 text-sm font-medium text-purple disabled:cursor-not-allowed disabled:opacity-40"
             >
               {loading ? 'Reading photo...' : 'Extract items'}
             </button>
-            <button onClick={onCancel} className="text-sm text-muted hover:text-ice">
+            <button onClick={onCancel} className="text-sm text-yolk  hover:text-ice">
               Cancel
             </button>
           </div>
@@ -167,12 +167,12 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
 
       {drafts && (
         <>
-          <p className="mb-3 text-xs text-muted">
+          <p className="mb-3 text-xs text-yolk ">
             Found {drafts.length} item{drafts.length === 1 ? '' : 's'} - uncheck anything wrong, edit the rest, then add.
           </p>
           <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
             {drafts.map((d) => (
-              <div key={d.id} className="flex flex-wrap items-center gap-2 rounded-lg bg-panelRaised p-2">
+              <div key={d.id} className="flex flex-wrap items-center gap-2 rounded-lg bg-mauve  p-2">
                 <input
                   type="checkbox"
                   checked={d.include}
@@ -183,19 +183,19 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
                 <input
                   value={d.name}
                   onChange={(e) => updateDraft(d.id, { name: e.target.value })}
-                  className="min-w-0 flex-1 rounded bg-panel px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-mint"
+                  className="min-w-0 flex-1 rounded bg-purple px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-yellow"
                 />
                 <input
                   type="number"
                   min={1}
                   value={d.qty}
                   onChange={(e) => updateDraft(d.id, { qty: Math.max(1, Number(e.target.value)) })}
-                  className="w-12 rounded bg-panel px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-mint"
+                  className="w-12 rounded bg-purple px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-yellow"
                 />
                 <select
                   value={d.unit}
                   onChange={(e) => updateDraft(d.id, { unit: e.target.value })}
-                  className="rounded bg-panel px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-mint"
+                  className="rounded bg-purple px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-yellow"
                 >
                   {ALL_UNITS.map((u) => (
                     <option key={u.value} value={u.value}>
@@ -206,7 +206,7 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
                 <select
                   value={d.category}
                   onChange={(e) => updateDraft(d.id, { category: e.target.value as Category })}
-                  className="rounded bg-panel px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-mint"
+                  className="rounded bg-purple px-2 py-1 text-xs text-ice outline-none focus:ring-1 focus:ring-yellow"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c.value} value={c.value}>
@@ -217,7 +217,7 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
                 <button
                   onClick={() => removeDraft(d.id)}
                   aria-label={`Remove ${d.name} from list`}
-                  className="text-xs text-muted hover:text-coral"
+                  className="text-xs text-yolk  hover:text-coral"
                 >
                   x
                 </button>
@@ -228,14 +228,14 @@ export default function ReceiptScanner({ onAddMany, onCancel }: Props) {
             <button
               onClick={confirmAdd}
               disabled={includedCount === 0}
-              className="rounded-lg bg-mint px-4 py-2 text-sm font-medium text-frost disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg bg-yellow px-4 py-2 text-sm font-medium text-purple disabled:cursor-not-allowed disabled:opacity-40"
             >
               Add {includedCount} item{includedCount === 1 ? '' : 's'} to fridge
             </button>
-            <button onClick={() => setDrafts(null)} className="text-sm text-muted hover:text-ice">
+            <button onClick={() => setDrafts(null)} className="text-sm text-yolk  hover:text-ice">
               Back
             </button>
-            <button onClick={onCancel} className="text-sm text-muted hover:text-ice">
+            <button onClick={onCancel} className="text-sm text-yolk  hover:text-ice">
               Cancel
             </button>
           </div>

@@ -47,17 +47,17 @@ export default function ApiKeySettings() {
 
   return (
     <section>
-      <h2 className="mb-3 font-display text-sm font-medium uppercase tracking-wide text-muted">Settings</h2>
+      <h2 className="mb-3 font-display text-sm font-medium uppercase tracking-wide text-yolk ">Settings</h2>
 
-      <div className="rounded-2xl bg-panel p-4">
+      <div className="rounded-2xl bg-purple p-4">
         <h3 className="font-display text-sm font-medium text-ice">Recipe API - Spoonacular</h3>
-        <p className="mt-1 text-xs text-muted">
+        <p className="mt-1 text-xs text-yolk ">
           Paste your own Spoonacular key and Frij will use it for recipe searches. Get a free one at{' '}
           <a
             href="https://spoonacular.com/food-api"
             target="_blank"
             rel="noreferrer"
-            className="text-mint hover:underline"
+            className="text-yellow hover:underline"
           >
             spoonacular.com/food-api
           </a>
@@ -67,7 +67,7 @@ export default function ApiKeySettings() {
         <p className="mt-3 text-xs text-ice">
           Status:{' '}
           {savedKey ? (
-            <span className="font-mono text-mint">key saved ({maskKey(savedKey)})</span>
+            <span className="font-mono text-yellow">key saved ({maskKey(savedKey)})</span>
           ) : (
             <span className="text-yolk">no key saved in this browser</span>
           )}
@@ -75,7 +75,7 @@ export default function ApiKeySettings() {
 
         <form onSubmit={handleSave} className="mt-3 flex flex-wrap items-end gap-3">
           <div className="flex flex-col">
-            <label className="mb-1 text-xs text-muted" htmlFor="spoonacular-key">
+            <label className="mb-1 text-xs text-yolk " htmlFor="spoonacular-key">
               {savedKey ? 'Replace key' : 'API key'}
             </label>
             <input
@@ -89,23 +89,23 @@ export default function ApiKeySettings() {
                 setError('');
               }}
               placeholder="paste your key"
-              className="w-64 rounded-lg bg-panelRaised px-3 py-2 font-mono text-sm text-ice outline-none focus:ring-2 focus:ring-mint"
+              className="w-64 rounded-lg bg-mauve  px-3 py-2 font-mono text-sm text-ice outline-none focus:ring-2 focus:ring-yellow"
             />
           </div>
-          <button type="submit" className="rounded-lg bg-mint px-4 py-2 text-sm font-medium text-frost">
+          <button type="submit" className="rounded-lg bg-yellow px-4 py-2 text-sm font-medium text-frost">
             Save key
           </button>
           {savedKey && (
-            <button type="button" onClick={handleRemove} className="text-sm text-muted hover:text-coral">
+            <button type="button" onClick={handleRemove} className="text-sm text-yolk  hover:text-coral">
               Remove key
             </button>
           )}
         </form>
 
         {error && <p className="mt-2 text-xs text-coral">{error}</p>}
-        {notice && !error && <p className="mt-2 text-xs text-mint">{notice}</p>}
+        {notice && !error && <p className="mt-2 text-xs text-yellow">{notice}</p>}
 
-        <p className="mt-4 text-xs text-muted">
+        <p className="mt-4 text-xs text-yolk ">
           Where it&apos;s kept: only in this browser&apos;s local storage, never in a database. Each search sends it to
           Frij&apos;s server, which passes it straight to Spoonacular and doesn&apos;t store or log it. It won&apos;t
           follow you to another browser or device. Don&apos;t save a key on a shared computer, since anyone using this

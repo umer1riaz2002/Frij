@@ -19,6 +19,10 @@ const config: Config = {
         coral: '#F2765B',
         sand: '#D9B27C',
         chill: '#8FD3E8',
+        purple: '#601D49',
+        mauve: '#BD5579',
+        peach: '#EA9D9D',
+        yellow: '#FFEBB8',
       },
       fontFamily: {
         display: ['var(--font-display)', 'system-ui', 'sans-serif'],

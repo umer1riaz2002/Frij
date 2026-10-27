@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchSpoonacular, SpoonacularError } from '@/lib/recipes/spoonacular';
 import { refineMissingIngredients } from '@/lib/recipes/refine';
+import { parseGroups, searchTerms, allTerms, rankRecipes } from '@/lib/recipes/priority';
 import { Recipe } from '@/lib/types';
 
 // Caps how many "what's this composite ingredient made of" lookups a
@@ -15,15 +16,14 @@ const KEY_HEADER = 'x-spoonacular-key';
 const KEY_PATTERN = /^[A-Za-z0-9_-]{8,100}$/;
 
 export async function GET(request: NextRequest) {
-  const ingredientsParam = request.nextUrl.searchParams.get('ingredients');
-  const names = (ingredientsParam ?? '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
+  // Items arrive grouped by priority tier (protein, pantry, dairy, produce, other, spices).
+  const groups = parseGroups(request.nextUrl.searchParams);
+  const queryTerms = searchTerms(groups); // what Spoonacular is asked about: no spices, no staples
+  const names = allTerms(groups); // everything on hand, used to decide what is missing
 
-  if (names.length === 0) {
+  if (queryTerms.length === 0) {
     return NextResponse.json(
-      { error: 'Add at least one ingredient to your fridge first.' },
+      { error: 'Add at least one ingredient to your fridge first. Spices alone are not enough to search with.' },
       { status: 400 }
     );
   }
@@ -47,11 +47,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let recipes: Recipe[] = await searchSpoonacular(names, apiKey);
+    const found = await searchSpoonacular(queryTerms, apiKey, groups);
+    let recipes: Recipe[] = found.recipes;
 
-    // Sort first so the "almost there" recipes are the ones that get the
+    // Rank first so the best matches are the ones that get the
     // budget-limited composite-ingredient lookups below.
-    recipes.sort((a, b) => a.missingCount - b.missingCount);
+    recipes = rankRecipes(recipes, found.tierMatches);
 
     let budget = DECOMPOSE_BUDGET;
     const refined: Recipe[] = [];
@@ -62,8 +63,8 @@ export async function GET(request: NextRequest) {
     }
     recipes = refined;
 
-    // Re-sort - a recipe's missingCount can drop after refinement.
-    recipes.sort((a, b) => a.missingCount - b.missingCount);
+    // Re-rank - a recipe's missingCount can drop after refinement.
+    recipes = rankRecipes(recipes, found.tierMatches);
 
     return NextResponse.json({ recipes });
   } catch (err) {
